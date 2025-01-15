@@ -60,4 +60,129 @@
     .warning {
       color: red;
       margin-top: 20px;
-      te
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>中医诊断系统</h1>
+    <h2>请选择症状（可多选）：</h2>
+    <div class="symptoms" id="symptoms-container"></div>
+    <button class="btn-diagnose" onclick="diagnose()">诊断</button>
+    <p class="warning" id="warning"></p>
+    <div class="result" id="result" style="display: none;"></div>
+  </div>
+
+  <script>
+    const symptomsData = {
+      common: {
+        symptoms: ['发热', '恶寒', '头痛', '脉浮', '无汗', '有汗', '咳嗽', '口渴', '胸胁苦满', '腹满', '便秘', '口苦'],
+      },
+      taiyang: {
+        symptoms: ['发热', '恶寒', '无汗', '脉浮'],
+        prescriptions: {
+          noSweat: {
+            name: '麻黄汤',
+            herbs: ['麻黄', '桂枝', '杏仁', '甘草'],
+            description: '用于发热恶寒，无汗而喘的太阳表实证。',
+          },
+          withSweat: {
+            name: '桂枝汤',
+            herbs: ['桂枝', '芍药', '生姜', '大枣', '甘草'],
+            description: '用于发热汗出，恶风的太阳表虚证。',
+          },
+        },
+      },
+      yangming: {
+        symptoms: ['发热', '口渴', '汗出', '腹满', '便秘'],
+        prescriptions: {
+          constipation: {
+            name: '大承气汤',
+            herbs: ['大黄', '厚朴', '枳实', '芒硝'],
+            description: '用于阳明腑实证，症见便秘、腹满。',
+          },
+        },
+      },
+      shaoyang: {
+        symptoms: ['往来寒热', '胸胁苦满', '口苦', '咽干', '目眩'],
+        prescriptions: {
+          default: {
+            name: '小柴胡汤',
+            herbs: ['柴胡', '黄芩', '人参', '甘草', '半夏', '生姜', '大枣'],
+            description: '用于和解少阳的往来寒热证。',
+          },
+        },
+      },
+    };
+
+    const selectedSymptoms = [];
+    const symptomsContainer = document.getElementById('symptoms-container');
+    const resultDiv = document.getElementById('result');
+    const warningDiv = document.getElementById('warning');
+
+    // 初始化症状按钮
+    symptomsData.common.symptoms.forEach((symptom) => {
+      const button = document.createElement('button');
+      button.textContent = symptom;
+      button.onclick = () => toggleSymptom(symptom, button);
+      symptomsContainer.appendChild(button);
+    });
+
+    function toggleSymptom(symptom, button) {
+      if (selectedSymptoms.includes(symptom)) {
+        selectedSymptoms.splice(selectedSymptoms.indexOf(symptom), 1);
+        button.classList.remove('selected');
+      } else {
+        selectedSymptoms.push(symptom);
+        button.classList.add('selected');
+      }
+    }
+
+    function diagnose() {
+      warningDiv.textContent = '';
+      resultDiv.style.display = 'none';
+
+      if (selectedSymptoms.length < 2) {
+        warningDiv.textContent = '请至少选择两个症状进行诊断';
+        return;
+      }
+
+      let bestMatch = null;
+      let matchedPrescription = null;
+
+      Object.entries(symptomsData).forEach(([syndrome, data]) => {
+        if (syndrome === 'common') return; // 跳过公共症状部分
+        const matches = selectedSymptoms.filter((s) => data.symptoms.includes(s)).length;
+        if (matches >= 2) {
+          bestMatch = syndrome;
+
+          // 具体诊断逻辑
+          if (syndrome === 'taiyang') {
+            matchedPrescription = selectedSymptoms.includes('无汗')
+              ? data.prescriptions.noSweat
+              : data.prescriptions.withSweat;
+          } else if (syndrome === 'yangming') {
+            matchedPrescription = data.prescriptions.constipation;
+          } else if (syndrome === 'shaoyang') {
+            matchedPrescription = data.prescriptions.default;
+          }
+        }
+      });
+
+      if (bestMatch && matchedPrescription) {
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `
+          <h3>诊断结果：</h3>
+          <p>证型：${bestMatch}</p>
+          <p>推荐方剂：${matchedPrescription.name}</p>
+          <p>组成：${matchedPrescription.herbs.join('、')}</p>
+          <p>说明：${matchedPrescription.description}</p>
+        `;
+      } else {
+        warningDiv.textContent = '无法诊断，请重新选择症状';
+      }
+    }
+  </script>
+</body>
+</html>
