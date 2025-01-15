@@ -87,6 +87,9 @@
           <option value="黄痰">黄痰</option>
         </select>
       </label>
+      <label><input type="checkbox" value="口渴"> 口渴</label>
+      <label><input type="checkbox" value="便秘"> 便秘</label>
+      <label><input type="checkbox" value="腹满"> 腹满</label>
     </div>
     <button class="btn-diagnose" onclick="diagnose()">诊断</button>
     <p class="warning" id="warning"></p>
@@ -96,7 +99,7 @@
   <script>
     const symptomsData = {
       表证: {
-        symptoms: ['恶寒', '发热', '无汗', '有汗', '咳嗽'],
+        symptoms: ['恶寒', '发热', '无汗', '有汗'],
         prescriptions: {
           麻黄汤: {
             name: '麻黄汤',
@@ -124,7 +127,7 @@
         },
       },
       里证: {
-        symptoms: ['发热', '口渴', '便秘', '腹满', '咳嗽'],
+        symptoms: ['发热', '口渴', '便秘', '腹满'],
         prescriptions: {
           大承气汤: {
             name: '大承气汤',
