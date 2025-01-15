@@ -1,149 +1,174 @@
-import React, { useState } from 'react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中医诊断系统</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .symptoms {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .symptoms button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    .symptoms button.selected {
+      background-color: #4caf50;
+      color: white;
+    }
+    .btn-diagnose {
+      display: block;
+      width: 100%;
+      padding: 10px 20px;
+      background-color: #4caf50;
+      color: white;
+      text-align: center;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .result {
+      margin-top: 20px;
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      border-left: 5px solid #4caf50;
+    }
+    .warning {
+      color: red;
+      margin-top: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>中医诊断系统</h1>
+    <h2>请选择症状</h2>
+    <div class="symptoms" id="symptoms-container"></div>
+    <button class="btn-diagnose" onclick="diagnose()">诊断</button>
+    <p class="warning" id="warning"></p>
+    <div class="result" id="result" style="display: none;"></div>
+  </div>
 
-const symptomsData = {
-  // 太阳病证
-  taiyang: {
-    symptoms: ['发热', '头痛', '恶寒', '脉浮', '无汗', '有汗'],
-    prescriptions: {
-      'noSweat': {
-        name: '麻黄汤',
-        herbs: ['麻黄', '桂枝', '杏仁', '甘草'],
-        description: '发热恶寒，无汗而喘'
+  <script>
+    const symptomsData = {
+      taiyang: {
+        symptoms: ['发热', '头痛', '恶寒', '脉浮', '无汗', '有汗'],
+        prescriptions: {
+          noSweat: {
+            name: '麻黄汤',
+            herbs: ['麻黄', '桂枝', '杏仁', '甘草'],
+            description: '发热恶寒，无汗而喘',
+          },
+          withSweat: {
+            name: '桂枝汤',
+            herbs: ['桂枝', '芍药', '生姜', '大枣', '甘草'],
+            description: '发热汗出，恶风',
+          },
+        },
       },
-      'withSweat': {
-        name: '桂枝汤',
-        herbs: ['桂枝', '芍药', '生姜', '大枣', '甘草'],
-        description: '发热汗出，恶风'
-      }
-    }
-  },
-  // 阳明病证
-  yangming: {
-    symptoms: ['发热', '不恶寒', '口渴', '汗出', '便秘', '腹满'],
-    prescriptions: {
-      'constipation': {
-        name: '大承气汤',
-        herbs: ['大黄', '厚朴', '枳实', '芒硝'],
-        description: '阳明腑实证'
-      }
-    }
-  },
-  // 少阳病证
-  shaoyang: {
-    symptoms: ['往来寒热', '胸胁苦满', '口苦', '咽干', '目眩', '心烦'],
-    prescriptions: {
-      'default': {
-        name: '小柴胡汤',
-        herbs: ['柴胡', '黄芩', '人参', '甘草', '半夏', '生姜', '大枣'],
-        description: '和解少阳'
-      }
-    }
-  }
-};
+      yangming: {
+        symptoms: ['发热', '不恶寒', '口渴', '汗出', '便秘', '腹满'],
+        prescriptions: {
+          constipation: {
+            name: '大承气汤',
+            herbs: ['大黄', '厚朴', '枳实', '芒硝'],
+            description: '阳明腑实证',
+          },
+        },
+      },
+    };
 
-const DiagnosisSystem = () => {
-  const [selectedSymptoms, setSelectedSymptoms] = useState([]);
-  const [diagnosis, setDiagnosis] = useState(null);
-  const [warning, setWarning] = useState('');
+    const selectedSymptoms = [];
+    const symptomsContainer = document.getElementById('symptoms-container');
+    const resultDiv = document.getElementById('result');
+    const warningDiv = document.getElementById('warning');
 
-  const handleSymptomSelect = (symptom) => {
-    if (selectedSymptoms.includes(symptom)) {
-      setSelectedSymptoms(selectedSymptoms.filter(s => s !== symptom));
-    } else {
-      setSelectedSymptoms([...selectedSymptoms, symptom]);
-    }
-  };
-
-  const analyzeSyndromes = () => {
-    if (selectedSymptoms.length < 2) {
-      setWarning('请至少选择两个症状进行诊断');
-      return;
-    }
-    
-    // 症状匹配逻辑
-    let maxMatches = 0;
-    let bestMatch = null;
-    let matchedPrescription = null;
-
-    Object.entries(symptomsData).forEach(([syndrome, data]) => {
-      const matches = selectedSymptoms.filter(s => 
-        data.symptoms.includes(s)).length;
-      
-      if (matches > maxMatches) {
-        maxMatches = matches;
-        bestMatch = syndrome;
-        
-        // 确定具体方剂
-        if (syndrome === 'taiyang') {
-          matchedPrescription = selectedSymptoms.includes('无汗') ? 
-            data.prescriptions.noSweat : data.prescriptions.withSweat;
-        } else {
-          matchedPrescription = data.prescriptions.default;
-        }
-      }
+    // 初始化症状按钮
+    Object.values(symptomsData).forEach((data) => {
+      data.symptoms.forEach((symptom) => {
+        const button = document.createElement('button');
+        button.textContent = symptom;
+        button.onclick = () => toggleSymptom(symptom, button);
+        symptomsContainer.appendChild(button);
+      });
     });
 
-    if (bestMatch && matchedPrescription) {
-      setDiagnosis({
-        syndrome: bestMatch,
-        prescription: matchedPrescription
-      });
-      setWarning('');
-    } else {
-      setWarning('无法确定诊断，请重新选择症状');
+    function toggleSymptom(symptom, button) {
+      if (selectedSymptoms.includes(symptom)) {
+        selectedSymptoms.splice(selectedSymptoms.indexOf(symptom), 1);
+        button.classList.remove('selected');
+      } else {
+        selectedSymptoms.push(symptom);
+        button.classList.add('selected');
+      }
     }
-  };
 
-  return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">中医诊断系统</h1>
-      
-      <div className="mb-6">
-        <h2 className="text-xl mb-4">请选择症状（可多选）：</h2>
-        <div className="flex flex-wrap gap-2">
-          {Object.values(symptomsData).flatMap(data => 
-            data.symptoms.map(symptom => (
-              <button
-                key={symptom}
-                onClick={() => handleSymptomSelect(symptom)}
-                className={`px-4 py-2 rounded-full ${
-                  selectedSymptoms.includes(symptom)
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200'
-                }`}
-              >
-                {symptom}
-              </button>
-            ))
-          )}
-        </div>
-      </div>
+    function diagnose() {
+      warningDiv.textContent = '';
+      resultDiv.style.display = 'none';
 
-      <button
-        onClick={analyzeSyndromes}
-        className="bg-green-500 text-white px-6 py-2 rounded mb-4"
-      >
-        诊断
-      </button>
+      if (selectedSymptoms.length < 2) {
+        warningDiv.textContent = '请至少选择两个症状进行诊断';
+        return;
+      }
 
-      {warning && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertDescription>{warning}</AlertDescription>
-        </Alert>
-      )}
+      let bestMatch = null;
+      let matchedPrescription = null;
 
-      {diagnosis && (
-        <div className="mt-6 p-4 border rounded">
-          <h3 className="text-xl font-bold mb-2">诊断结果：</h3>
-          <p className="mb-2">证型：{diagnosis.syndrome}</p>
-          <p className="mb-2">推荐方剂：{diagnosis.prescription.name}</p>
-          <p className="mb-2">组成：{diagnosis.prescription.herbs.join('、')}</p>
-          <p>说明：{diagnosis.prescription.description}</p>
-        </div>
-      )}
-    </div>
-  );
-};
+      Object.entries(symptomsData).forEach(([syndrome, data]) => {
+        const matches = selectedSymptoms.filter((s) => data.symptoms.includes(s)).length;
+        if (matches > 0) {
+          bestMatch = syndrome;
 
-export default DiagnosisSystem;
+          // 具体诊断逻辑
+          if (syndrome === 'taiyang') {
+            matchedPrescription = selectedSymptoms.includes('无汗')
+              ? data.prescriptions.noSweat
+              : data.prescriptions.withSweat;
+          } else if (syndrome === 'yangming') {
+            matchedPrescription = data.prescriptions.constipation;
+          }
+        }
+      });
+
+      if (bestMatch && matchedPrescription) {
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `
+          <h3>诊断结果：</h3>
+          <p>证型：${bestMatch}</p>
+          <p>推荐方剂：${matchedPrescription.name}</p>
+          <p>组成：${matchedPrescription.herbs.join('、')}</p>
+          <p>说明：${matchedPrescription.description}</p>
+        `;
+      } else {
+        warningDiv.textContent = '无法诊断，请重新选择症状';
+      }
+    }
+  </script>
+</body>
+</html>
