@@ -1,127 +1,135 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>患者信息提交</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f9;
-        }
-        h1 {
-            color: #4CAF50;
-        }
-        .container {
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            font-weight: bold;
-        }
-        select, button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            background: #4CAF50;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #45a049;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>患者信息提交</h1>
-        <form id="patientForm">
-            <!-- 是否发热 -->
-            <div class="form-group">
-                <label for="fever">是否发热:</label>
-                <select id="fever">
-                    <option value="no">否</option>
-                    <option value="mild">轻度发热</option>
-                    <option value="high">高热</option>
-                </select>
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+const DiagnosisForm = () => {
+  const [symptoms, setSymptoms] = useState({
+    diseaseStage: '',
+    fever: false,
+    chills: false,
+    sweat: false,
+    tongueColor: '',
+    pulse: '',
+    bodyPain: '',
+    digestion: '',
+  });
+
+  const [diagnosis, setDiagnosis] = useState('');
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setSymptoms(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const diagnoseDisease = () => {
+    // 基于《伤寒论》的诊断逻辑
+    if (symptoms.diseaseStage === 'early') {
+      if (symptoms.fever && !symptoms.sweat) {
+        setDiagnosis('麻黄汤证：发热、无汗、恶寒');
+      } else if (symptoms.fever && symptoms.sweat) {
+        setDiagnosis('桂枝汤证：发热、有汗、恶风');
+      }
+    } else if (symptoms.diseaseStage === 'middle') {
+      if (symptoms.digestion === 'poor' && symptoms.fever) {
+        setDiagnosis('白虎汤证：阳明病、胃家实');
+      }
+    }
+  };
+
+  return (
+    <Card className="w-full max-w-2xl mx-auto">
+      <CardHeader>
+        <CardTitle>伤寒论诊断系统</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">发病阶段</label>
+              <select 
+                name="diseaseStage" 
+                value={symptoms.diseaseStage}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded"
+              >
+                <option value="">请选择</option>
+                <option value="early">太阳病（1-2天）</option>
+                <option value="middle">阳明病（2-4天）</option>
+                <option value="late">少阳病（4-7天）</option>
+                <option value="critical">三阴病（7天以上）</option>
+              </select>
             </div>
-            <!-- 是否恶寒 -->
-            <div class="form-group">
-                <label for="chills">是否恶寒:</label>
-                <select id="chills">
-                    <option value="no">否</option>
-                    <option value="yes">是</option>
-                </select>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">舌象</label>
+              <select 
+                name="tongueColor" 
+                value={symptoms.tongueColor}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded"
+              >
+                <option value="">请选择</option>
+                <option value="normal">正常</option>
+                <option value="white">白苔</option>
+                <option value="yellow">黄苔</option>
+                <option value="dark">黑苔</option>
+              </select>
             </div>
-            <!-- 舌苔颜色 -->
-            <div class="form-group">
-                <label for="tongue">舌苔颜色:</label>
-                <select id="tongue">
-                    <option value="normal">正常</option>
-                    <option value="white">白苔</option>
-                    <option value="yellow">黄苔</option>
-                    <option value="thick">厚腻苔</option>
-                </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="inline-flex items-center">
+              <input
+                type="checkbox"
+                name="fever"
+                checked={symptoms.fever}
+                onChange={handleInputChange}
+                className="mr-2"
+              />
+              发热
+            </label>
+            <label className="inline-flex items-center ml-4">
+              <input
+                type="checkbox"
+                name="chills"
+                checked={symptoms.chills}
+                onChange={handleInputChange}
+                className="mr-2"
+              />
+              恶寒
+            </label>
+            <label className="inline-flex items-center ml-4">
+              <input
+                type="checkbox"
+                name="sweat"
+                checked={symptoms.sweat}
+                onChange={handleInputChange}
+                className="mr-2"
+              />
+              汗出
+            </label>
+          </div>
+
+          <button
+            type="button"
+            onClick={diagnoseDisease}
+            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+          >
+            进行诊断
+          </button>
+
+          {diagnosis && (
+            <div className="mt-4 p-4 bg-gray-100 rounded">
+              <h3 className="font-medium">诊断结果：</h3>
+              <p>{diagnosis}</p>
             </div>
-            <!-- 是否咳嗽 -->
-            <div class="form-group">
-                <label for="cough">是否咳嗽:</label>
-                <select id="cough">
-                    <option value="no">否</option>
-                    <option value="mild">轻微咳嗽</option>
-                    <option value="severe">剧烈咳嗽</option>
-                </select>
-            </div>
-            <!-- 痰液颜色 -->
-            <div class="form-group">
-                <label for="sputum">痰液颜色:</label>
-                <select id="sputum">
-                    <option value="none">无痰</option>
-                    <option value="white">白色</option>
-                    <option value="yellow">黄色</option>
-                    <option value="green">绿色</option>
-                </select>
-            </div>
-            <button type="button" onclick="submitInfo()">提交信息</button>
+          )}
         </form>
-        <div id="result" style="margin-top: 20px; display: none; background: #e7f4e4; padding: 10px; border-left: 5px solid #4CAF50;"></div>
-    </div>
+      </CardContent>
+    </Card>
+  );
+};
 
-    <script>
-        function submitInfo() {
-            const fever = document.getElementById('fever').value;
-            const chills = document.getElementById('chills').value;
-            const tongue = document.getElementById('tongue').value;
-            const cough = document.getElementById('cough').value;
-            const sputum = document.getElementById('sputum').value;
-
-            let result = `
-                患者信息提交成功：
-                <br>是否发热: ${fever === 'no' ? '否' : fever === 'mild' ? '轻度发热' : '高热'}
-                <br>是否恶寒: ${chills === 'yes' ? '是' : '否'}
-                <br>舌苔颜色: ${tongue === 'normal' ? '正常' : tongue === 'white' ? '白苔' : tongue === 'yellow' ? '黄苔' : '厚腻苔'}
-                <br>是否咳嗽: ${cough === 'no' ? '否' : cough === 'mild' ? '轻微咳嗽' : '剧烈咳嗽'}
-                <br>痰液颜色: ${sputum === 'none' ? '无痰' : sputum === 'white' ? '白色' : sputum === 'yellow' ? '黄色' : '绿色'}
-            `;
-
-            const resultDiv = document.getElementById('result');
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = result;
-        }
-    </script>
-</body>
-</html>
+export default DiagnosisForm;
