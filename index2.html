@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>中医诊断系统</title>
+  <title>中医诊断系统 v1.0</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -21,6 +21,12 @@
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .version {
+      text-align: center;
+      font-size: 0.9em;
+      color: gray;
+      margin-bottom: 10px;
     }
     .symptoms {
       display: flex;
@@ -67,6 +73,7 @@
 <body>
   <div class="container">
     <h1>中医诊断系统</h1>
+    <p class="version">系统版本：v1.0</p>
     <h2>请选择症状（可多选）：</h2>
     <div class="symptoms" id="symptoms-container"></div>
     <button class="btn-diagnose" onclick="diagnose()">诊断</button>
