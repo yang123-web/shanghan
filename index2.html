@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>中医诊断系统（感冒） v1.1</title>
+  <title>中医诊断系统（感冒） v1.2</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -71,16 +71,22 @@
 <body>
   <div class="container">
     <h1>中医诊断系统（感冒）</h1>
-    <p class="version">系统版本：v1.1 | 开发时间：2025年1月</p>
+    <p class="version">系统版本：v1.2 | 开发时间：2025年1月</p>
     <h2>请选择症状：</h2>
     <div class="symptoms" id="symptoms-container">
       <label><input type="checkbox" value="恶寒"> 恶寒（怕冷）</label>
       <label><input type="checkbox" value="发热"> 发热</label>
       <label><input type="checkbox" value="无汗"> 无汗</label>
       <label><input type="checkbox" value="有汗"> 有汗</label>
-      <label><input type="checkbox" value="口渴"> 口渴</label>
-      <label><input type="checkbox" value="便秘"> 便秘</label>
-      <label><input type="checkbox" value="腹满"> 腹满</label>
+      <label><input type="checkbox" value="咳嗽"> 咳嗽</label>
+      <label>
+        痰液颜色：
+        <select id="phlegm-color">
+          <option value="">请选择</option>
+          <option value="白痰">白痰</option>
+          <option value="黄痰">黄痰</option>
+        </select>
+      </label>
     </div>
     <button class="btn-diagnose" onclick="diagnose()">诊断</button>
     <p class="warning" id="warning"></p>
@@ -90,7 +96,7 @@
   <script>
     const symptomsData = {
       表证: {
-        symptoms: ['恶寒', '发热', '无汗', '有汗'],
+        symptoms: ['恶寒', '发热', '无汗', '有汗', '咳嗽'],
         prescriptions: {
           麻黄汤: {
             name: '麻黄汤',
@@ -118,7 +124,7 @@
         },
       },
       里证: {
-        symptoms: ['发热', '口渴', '便秘', '腹满'],
+        symptoms: ['发热', '口渴', '便秘', '腹满', '咳嗽'],
         prescriptions: {
           大承气汤: {
             name: '大承气汤',
@@ -139,13 +145,14 @@
       const selectedSymptoms = Array.from(document.querySelectorAll('.symptoms input:checked')).map(
         (checkbox) => checkbox.value
       );
+      const phlegmColor = document.getElementById('phlegm-color').value;
 
       const warningDiv = document.getElementById('warning');
       const resultDiv = document.getElementById('result');
       warningDiv.textContent = '';
       resultDiv.style.display = 'none';
 
-      if (selectedSymptoms.length === 0) {
+      if (selectedSymptoms.length === 0 && !phlegmColor) {
         warningDiv.textContent = '请至少选择一个症状进行诊断';
         return;
       }
@@ -155,7 +162,10 @@
 
       Object.entries(symptomsData).forEach(([type, data]) => {
         const matches = selectedSymptoms.filter((s) => data.symptoms.includes(s)).length;
-        if (matches >= 2) {
+        if (matches >= 2 || (phlegmColor && type === '表证' && phlegmColor === '白痰')) {
+          bestMatch = type;
+          matchedPrescription = Object.values(data.prescriptions)[0];
+        } else if (phlegmColor && type === '里证' && phlegmColor === '黄痰') {
           bestMatch = type;
           matchedPrescription = Object.values(data.prescriptions)[0];
         }
