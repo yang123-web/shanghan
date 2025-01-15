@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>迷宫游戏</title>
+  <style>
+    canvas {
+      border: 2px solid #000;
+      display: block;
+      margin: 0 auto;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>迷宫游戏</h1>
+  <canvas id="mazeCanvas" width="400" height="400"></canvas>
+  <p>使用键盘方向键或手势滑动控制角色！</p>
+  <script>
+    const canvas = document.getElementById('mazeCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const maze = [
+      [1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 1],
+      [1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1],
+      [1, 1, 1, 0, 1],
+      [1, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1],
+    ];
+    const blockSize = 80;
+    let playerX = 1;
+    let playerY = 1;
+
+    function drawMaze() {
+      for (let y = 0; y < maze.length; y++) {
+        for (let x = 0; x < maze[y].length; x++) {
+          if (maze[y][x] === 1) {
+            ctx.fillStyle = 'black';
+            ctx.fillRect(x * blockSize, y * blockSize, blockSize, blockSize);
+          } else {
+            ctx.clearRect(x * blockSize, y * blockSize, blockSize, blockSize);
+          }
+        }
+      }
+      drawPlayer();
+    }
+
+    function drawPlayer() {
+      ctx.fillStyle = 'blue';
+      ctx.beginPath();
+      ctx.arc(playerX * blockSize + blockSize / 2, playerY * blockSize + blockSize / 2, blockSize / 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function movePlayer(dx, dy) {
+      if (maze[playerY + dy][playerX + dx] === 0) {
+        playerX += dx;
+        playerY += dy;
+        drawMaze();
+        if (playerX === 3 && playerY === 5) {
+          alert('恭喜通关！');
+        }
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp') movePlayer(0, -1);
+      if (e.key === 'ArrowDown') movePlayer(0, 1);
+      if (e.key === 'ArrowLeft') movePlayer(-1, 0);
+      if (e.key === 'ArrowRight') movePlayer(1, 0);
+    });
+
+    drawMaze();
+  </script>
+</body>
+</html>
