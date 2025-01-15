@@ -1,9 +1,57 @@
+// src/constants/diagnosisRules.js
+export const DIAGNOSIS_RULES = {
+  EARLY_STAGE: {
+    mahuang: {
+      symptoms: ['fever', 'noSweat', 'chills'],
+      prescription: '麻黄汤',
+      description: '发热、无汗、恶寒'
+    },
+    guizhi: {
+      symptoms: ['fever', 'sweat', 'windFear'],
+      prescription: '桂枝汤',
+      description: '发热、有汗、恶风'
+    }
+  },
+  MIDDLE_STAGE: {
+    baihu: {
+      symptoms: ['highFever', 'thirst'],
+      prescription: '白虎汤',
+      description: '大热、烦渴'
+    },
+    tiaowei: {
+      symptoms: ['constipation', 'abdominalFullness'],
+      prescription: '调胃承气汤',
+      description: '腹实满'
+    }
+  }
+};
+
+// src/utils/diagnosisHelper.js
+export const analyzeSymptoms = (symptoms) => {
+  const {stage, ...symptomSet} = symptoms;
+  let matchedRules = [];
+
+  if (stage === 'early') {
+    matchedRules = matchEarlyStageRules(symptomSet);
+  } else if (stage === 'middle') {
+    matchedRules = matchMiddleStageRules(symptomSet);
+  }
+
+  return matchedRules;
+};
+
+// src/components/DiagnosisForm/index.jsx
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { DIAGNOSIS_RULES } from '../../constants/diagnosisRules';
+import { analyzeSymptoms } from '../../utils/diagnosisHelper';
 
 const DiagnosisForm = () => {
   const [symptoms, setSymptoms] = useState({
-    diseaseStage: '',
+    stage: '',
     fever: false,
     chills: false,
     sweat: false,
@@ -13,117 +61,114 @@ const DiagnosisForm = () => {
     digestion: '',
   });
 
-  const [diagnosis, setDiagnosis] = useState('');
+  const [diagnosis, setDiagnosis] = useState(null);
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const handleInputChange = (name, value) => {
     setSymptoms(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: value
     }));
   };
 
-  const diagnoseDisease = () => {
-    // 基于《伤寒论》的诊断逻辑
-    if (symptoms.diseaseStage === 'early') {
-      if (symptoms.fever && !symptoms.sweat) {
-        setDiagnosis('麻黄汤证：发热、无汗、恶寒');
-      } else if (symptoms.fever && symptoms.sweat) {
-        setDiagnosis('桂枝汤证：发热、有汗、恶风');
-      }
-    } else if (symptoms.diseaseStage === 'middle') {
-      if (symptoms.digestion === 'poor' && symptoms.fever) {
-        setDiagnosis('白虎汤证：阳明病、胃家实');
-      }
-    }
+  const handleDiagnosis = () => {
+    const result = analyzeSymptoms(symptoms);
+    setDiagnosis(result);
   };
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>伤寒论诊断系统</CardTitle>
+        <CardTitle className="text-2xl font-bold">伤寒论诊断系统</CardTitle>
       </CardHeader>
       <CardContent>
-        <form className="space-y-4">
+        <form className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">发病阶段</label>
-              <select 
-                name="diseaseStage" 
-                value={symptoms.diseaseStage}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
+            <div className="space-y-2">
+              <label className="text-sm font-medium">发病阶段</label>
+              <Select 
+                value={symptoms.stage}
+                onValueChange={(value) => handleInputChange('stage', value)}
               >
-                <option value="">请选择</option>
-                <option value="early">太阳病（1-2天）</option>
-                <option value="middle">阳明病（2-4天）</option>
-                <option value="late">少阳病（4-7天）</option>
-                <option value="critical">三阴病（7天以上）</option>
-              </select>
+                <SelectTrigger>
+                  <SelectValue placeholder="选择发病阶段" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="early">太阳病（1-2天）</SelectItem>
+                  <SelectItem value="middle">阳明病（2-4天）</SelectItem>
+                  <SelectItem value="late">少阳病（4-7天）</SelectItem>
+                  <SelectItem value="critical">三阴病（7天以上）</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">舌象</label>
-              <select 
-                name="tongueColor" 
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium">舌象</label>
+              <Select
                 value={symptoms.tongueColor}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
+                onValueChange={(value) => handleInputChange('tongueColor', value)}
               >
-                <option value="">请选择</option>
-                <option value="normal">正常</option>
-                <option value="white">白苔</option>
-                <option value="yellow">黄苔</option>
-                <option value="dark">黑苔</option>
-              </select>
+                <SelectTrigger>
+                  <SelectValue placeholder="选择舌象" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="normal">正常</SelectItem>
+                  <SelectItem value="white">白苔</SelectItem>
+                  <SelectItem value="yellow">黄苔</SelectItem>
+                  <SelectItem value="dark">黑苔</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="inline-flex items-center">
-              <input
-                type="checkbox"
-                name="fever"
-                checked={symptoms.fever}
-                onChange={handleInputChange}
-                className="mr-2"
-              />
-              发热
-            </label>
-            <label className="inline-flex items-center ml-4">
-              <input
-                type="checkbox"
-                name="chills"
-                checked={symptoms.chills}
-                onChange={handleInputChange}
-                className="mr-2"
-              />
-              恶寒
-            </label>
-            <label className="inline-flex items-center ml-4">
-              <input
-                type="checkbox"
-                name="sweat"
-                checked={symptoms.sweat}
-                onChange={handleInputChange}
-                className="mr-2"
-              />
-              汗出
-            </label>
+            <p className="text-sm font-medium mb-2">主要症状</p>
+            <div className="flex space-x-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="fever"
+                  checked={symptoms.fever}
+                  onCheckedChange={(checked) => handleInputChange('fever', checked)}
+                />
+                <label htmlFor="fever">发热</label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="chills"
+                  checked={symptoms.chills}
+                  onCheckedChange={(checked) => handleInputChange('chills', checked)}
+                />
+                <label htmlFor="chills">恶寒</label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="sweat"
+                  checked={symptoms.sweat}
+                  onCheckedChange={(checked) => handleInputChange('sweat', checked)}
+                />
+                <label htmlFor="sweat">汗出</label>
+              </div>
+            </div>
           </div>
 
-          <button
+          <Button
             type="button"
-            onClick={diagnoseDisease}
-            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+            onClick={handleDiagnosis}
+            className="w-full"
           >
             进行诊断
-          </button>
+          </Button>
 
           {diagnosis && (
-            <div className="mt-4 p-4 bg-gray-100 rounded">
-              <h3 className="font-medium">诊断结果：</h3>
-              <p>{diagnosis}</p>
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <h3 className="font-medium text-lg mb-2">诊断结果：</h3>
+              <div className="space-y-2">
+                {diagnosis.map((result, index) => (
+                  <div key={index} className="p-2 border-l-4 border-blue-500 bg-white">
+                    <p className="font-medium">{result.prescription}</p>
+                    <p className="text-gray-600">{result.description}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </form>
