@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shanghanlun Diagnosis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e7f4e4;
+            border-left: 5px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Shanghanlun Diagnosis</h1>
+        <form id="diagnosisForm">
+            <div class="form-group">
+                <label for="symptoms">Enter Symptoms (e.g., fever, chills, no sweat):</label>
+                <input type="text" id="symptoms" placeholder="Describe your symptoms">
+            </div>
+            <button type="button" onclick="diagnose()">Diagnose</button>
+        </form>
+        <div id="result" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        function diagnose() {
+            const symptoms = document.getElementById('symptoms').value.toLowerCase();
+            const resultDiv = document.getElementById('result');
+
+            let diagnosis = "No matching pattern found. Please refine your symptoms or consult a professional.";
+
+            if (symptoms.includes('fever') && symptoms.includes('chills') && symptoms.includes('no sweat')) {
+                diagnosis = "Suggested Diagnosis: Taiyang Disease - Use Ma Huang Tang.";
+            } else if (symptoms.includes('fever') && symptoms.includes('sweating') && symptoms.includes('mild chills')) {
+                diagnosis = "Suggested Diagnosis: Taiyang Disease - Use Gui Zhi Tang.";
+            } else if (symptoms.includes('abdominal pain') && symptoms.includes('diarrhea')) {
+                diagnosis = "Suggested Diagnosis: Taiyin Disease - Use Li Zhong Wan.";
+            }
+
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = diagnosis;
+        }
+    </script>
+</body>
+</html>
