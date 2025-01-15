@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>迷宫英语学习游戏（扩展版）</title>
+  <title>复杂迷宫英语学习游戏</title>
   <style>
     canvas {
       border: 2px solid #000;
@@ -33,10 +33,14 @@
     .question-container button:hover {
       background-color: #45a049;
     }
+    #message {
+      margin-top: 20px;
+      color: blue;
+    }
   </style>
 </head>
 <body>
-  <h1>迷宫英语学习游戏（扩展版）</h1>
+  <h1>复杂迷宫英语学习游戏</h1>
   <canvas id="mazeCanvas" width="800" height="800"></canvas>
   <div class="question-container" id="questionContainer">
     <h2 id="questionText"></h2>
@@ -49,32 +53,38 @@
     const ctx = canvas.getContext("2d");
 
     const maze = [
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 1, 0, 0, 2, 0, 1],
-      [1, 0, 1, 0, 1, 0, 1, 0, 0, 1],
-      [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
-      [1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-      [1, 0, 1, 1, 1, 0, 1, 0, 1, 1],
-      [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-      [1, 1, 1, 0, 1, 1, 1, 1, 3, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1],
+      [1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1],
+      [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
+      [1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1],
+      [1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+      [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
+      [1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1],
+      [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+      [1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1],
+      [1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
+      [1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1],
+      [1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+      [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     ];
 
-    const blockSize = 80;
+    const blockSize = 50;
     let playerX = 1;
     let playerY = 1;
 
     const questions = {
       "2": {
-        question: "What is 2 + 2?",
-        options: ["3", "4", "5", "6"],
-        correct: "4",
+        question: "Translate 'apple' to Chinese.",
+        options: ["苹果", "香蕉", "橙子", "梨"],
+        correct: "苹果",
       },
       "3": {
-        question: "What is the capital of France?",
-        options: ["London", "Berlin", "Paris", "Rome"],
-        correct: "Paris",
+        question: "What is 10 - 3?",
+        options: ["5", "6", "7", "8"],
+        correct: "7",
       },
     };
 
@@ -120,11 +130,11 @@
         const target = maze[playerY][playerX];
         if (target === 2 || target === 3) {
           showQuestion(target);
-          maze[playerY][playerX] = 0; // Remove the question target
+          maze[playerY][playerX] = 0; // Remove question point
         }
         drawMaze();
-        if (playerX === 8 && playerY === 7) {
-          alert("Congratulations! You completed the maze.");
+        if (playerX === 14 && playerY === 14) {
+          alert("Congratulations! You have completed the maze!");
         }
       }
     }
