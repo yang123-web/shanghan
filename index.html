@@ -1,52 +1,8 @@
-// src/constants/diagnosisRules.js
-export const DIAGNOSIS_RULES = {
-  EARLY_STAGE: {
-    mahuang: {
-      symptoms: ['fever', 'noSweat', 'chills'],
-      prescription: '麻黄汤',
-      description: '发热、无汗、恶寒'
-    },
-    guizhi: {
-      symptoms: ['fever', 'sweat', 'windFear'],
-      prescription: '桂枝汤',
-      description: '发热、有汗、恶风'
-    }
-  },
-  MIDDLE_STAGE: {
-    baihu: {
-      symptoms: ['highFever', 'thirst'],
-      prescription: '白虎汤',
-      description: '大热、烦渴'
-    },
-    tiaowei: {
-      symptoms: ['constipation', 'abdominalFullness'],
-      prescription: '调胃承气汤',
-      description: '腹实满'
-    }
-  }
-};
-
-// src/utils/diagnosisHelper.js
-export const analyzeSymptoms = (symptoms) => {
-  const {stage, ...symptomSet} = symptoms;
-  let matchedRules = [];
-
-  if (stage === 'early') {
-    matchedRules = matchEarlyStageRules(symptomSet);
-  } else if (stage === 'middle') {
-    matchedRules = matchMiddleStageRules(symptomSet);
-  }
-
-  return matchedRules;
-};
-
-// src/components/DiagnosisForm/index.jsx
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { DIAGNOSIS_RULES } from '../../constants/diagnosisRules';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 import { analyzeSymptoms } from '../../utils/diagnosisHelper';
 
 const DiagnosisForm = () => {
@@ -56,17 +12,14 @@ const DiagnosisForm = () => {
     chills: false,
     sweat: false,
     tongueColor: '',
-    pulse: '',
-    bodyPain: '',
-    digestion: '',
   });
 
   const [diagnosis, setDiagnosis] = useState(null);
 
   const handleInputChange = (name, value) => {
-    setSymptoms(prev => ({
+    setSymptoms((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -85,7 +38,7 @@ const DiagnosisForm = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">发病阶段</label>
-              <Select 
+              <Select
                 value={symptoms.stage}
                 onValueChange={(value) => handleInputChange('stage', value)}
               >
@@ -95,12 +48,10 @@ const DiagnosisForm = () => {
                 <SelectContent>
                   <SelectItem value="early">太阳病（1-2天）</SelectItem>
                   <SelectItem value="middle">阳明病（2-4天）</SelectItem>
-                  <SelectItem value="late">少阳病（4-7天）</SelectItem>
-                  <SelectItem value="critical">三阴病（7天以上）</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-sm font-medium">舌象</label>
               <Select
@@ -113,48 +64,32 @@ const DiagnosisForm = () => {
                 <SelectContent>
                   <SelectItem value="normal">正常</SelectItem>
                   <SelectItem value="white">白苔</SelectItem>
-                  <SelectItem value="yellow">黄苔</SelectItem>
-                  <SelectItem value="dark">黑苔</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div className="space-y-2">
-            <p className="text-sm font-medium mb-2">主要症状</p>
+            <p className="text-sm font-medium">主要症状</p>
             <div className="flex space-x-4">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="fever"
-                  checked={symptoms.fever}
-                  onCheckedChange={(checked) => handleInputChange('fever', checked)}
-                />
-                <label htmlFor="fever">发热</label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="chills"
-                  checked={symptoms.chills}
-                  onCheckedChange={(checked) => handleInputChange('chills', checked)}
-                />
-                <label htmlFor="chills">恶寒</label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="sweat"
-                  checked={symptoms.sweat}
-                  onCheckedChange={(checked) => handleInputChange('sweat', checked)}
-                />
-                <label htmlFor="sweat">汗出</label>
-              </div>
+              {[
+                { id: 'fever', label: '发热' },
+                { id: 'chills', label: '恶寒' },
+                { id: 'sweat', label: '汗出' },
+              ].map((symptom) => (
+                <div key={symptom.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={symptom.id}
+                    checked={symptoms[symptom.id]}
+                    onCheckedChange={(checked) => handleInputChange(symptom.id, checked)}
+                  />
+                  <label htmlFor={symptom.id}>{symptom.label}</label>
+                </div>
+              ))}
             </div>
           </div>
 
-          <Button
-            type="button"
-            onClick={handleDiagnosis}
-            className="w-full"
-          >
+          <Button type="button" onClick={handleDiagnosis} className="w-full">
             进行诊断
           </Button>
 
