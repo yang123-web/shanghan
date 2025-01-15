@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>中医诊断系统（感冒与六经辨证） v2.0</title>
+  <title>中医诊断系统（全面版） v3.0</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -70,25 +70,11 @@
 </head>
 <body>
   <div class="container">
-    <h1>中医诊断系统（感冒与六经辨证）</h1>
-    <p class="version">系统版本：v2.0 | 开发时间：2025年1月</p>
+    <h1>中医诊断系统（全面版）</h1>
+    <p class="version">系统版本：v3.0 | 开发时间：2025年1月</p>
     <h2>请选择症状：</h2>
     <div class="symptoms" id="symptoms-container">
-      <label><input type="checkbox" value="恶寒"> 恶寒（怕冷）</label>
-      <label><input type="checkbox" value="发热"> 发热</label>
-      <label><input type="checkbox" value="无汗"> 无汗</label>
-      <label><input type="checkbox" value="有汗"> 有汗</label>
-      <label><input type="checkbox" value="咳嗽"> 咳嗽</label>
-      <label><input type="checkbox" value="白痰"> 白痰</label>
-      <label><input type="checkbox" value="黄痰"> 黄痰</label>
-      <label><input type="checkbox" value="口渴"> 口渴</label>
-      <label><input type="checkbox" value="便秘"> 便秘</label>
-      <label><input type="checkbox" value="腹满"> 腹满</label>
-      <label><input type="checkbox" value="往来寒热"> 往来寒热</label>
-      <label><input type="checkbox" value="胁痛"> 胁痛</label>
-      <label><input type="checkbox" value="小便不利"> 小便不利</label>
-      <label><input type="checkbox" value="心烦"> 心烦</label>
-      <label><input type="checkbox" value="呕吐"> 呕吐</label>
+      <!-- 动态生成症状选项 -->
     </div>
     <button class="btn-diagnose" onclick="diagnose()">诊断</button>
     <p class="warning" id="warning"></p>
@@ -98,7 +84,7 @@
   <script>
     const symptomsData = {
       太阳病: {
-        symptoms: ['恶寒', '发热', '无汗', '有汗', '头痛', '鼻塞', '脉浮紧'],
+        symptoms: ['恶寒', '发热', '无汗', '有汗', '头痛', '鼻塞', '咳嗽', '白痰'],
         prescriptions: {
           麻黄汤: {
             name: '麻黄汤',
@@ -128,21 +114,21 @@
       阳明病: {
         symptoms: ['发热', '口渴', '便秘', '腹满', '心烦', '脉沉实'],
         prescriptions: {
-          大承气汤: {
-            name: '大承气汤',
+          白虎汤: {
+            name: '白虎汤',
             herbs: [
-              { name: '大黄', amount: '12克' },
-              { name: '厚朴', amount: '9克' },
-              { name: '枳实', amount: '9克' },
-              { name: '芒硝', amount: '6克' },
+              { name: '石膏', amount: '30克' },
+              { name: '知母', amount: '9克' },
+              { name: '甘草', amount: '6克' },
+              { name: '粳米', amount: '12克' },
             ],
-            usage: '将药材加水煎煮40分钟，趁热服用一次。',
-            description: '用于腹满、便秘、脉沉实、发热的阳明腑实证。',
+            usage: '将药材加水煎煮30分钟，分两次服用。',
+            description: '用于高热、大汗、口渴的阳明热证。',
           },
         },
       },
       少阳病: {
-        symptoms: ['往来寒热', '胸胁苦满', '口苦', '咽干', '目眩', '心烦', '小便不利'],
+        symptoms: ['往来寒热', '胸胁苦满', '口苦', '咽干', '目眩'],
         prescriptions: {
           小柴胡汤: {
             name: '小柴胡汤',
@@ -155,7 +141,7 @@
               { name: '生姜', amount: '9克' },
               { name: '大枣', amount: '3枚' },
             ],
-            usage: '将药材加水煎煮30分钟，分两次服用，温服。',
+            usage: '将药材加水煎煮30分钟，分两次服用。',
             description: '用于往来寒热、胸胁苦满、口苦的少阳证。',
           },
         },
@@ -207,6 +193,24 @@
         warningDiv.textContent = '未匹配到具体诊断，请重新选择症状';
       }
     }
+
+    // 动态生成症状选项
+    function generateSymptoms() {
+      const symptomsContainer = document.getElementById('symptoms-container');
+      Object.values(symptomsData).forEach((data) => {
+        data.symptoms.forEach((symptom) => {
+          const label = document.createElement('label');
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.value = symptom;
+          label.appendChild(checkbox);
+          label.appendChild(document.createTextNode(` ${symptom}`));
+          symptomsContainer.appendChild(label);
+        });
+      });
+    }
+
+    generateSymptoms();
   </script>
 </body>
 </html>
