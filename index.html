@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shanghanlun Diagnosis</title>
+    <title>伤寒论诊断系统</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -54,13 +54,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>Shanghanlun Diagnosis</h1>
+        <h1>伤寒论诊断系统</h1>
         <form id="diagnosisForm">
             <div class="form-group">
-                <label for="symptoms">Enter Symptoms (e.g., fever, chills, no sweat):</label>
-                <input type="text" id="symptoms" placeholder="Describe your symptoms">
+                <label for="symptoms">请输入症状（例如：发热、恶寒、无汗）:</label>
+                <input type="text" id="symptoms" placeholder="描述您的症状">
             </div>
-            <button type="button" onclick="diagnose()">Diagnose</button>
+            <button type="button" onclick="diagnose()">诊断</button>
         </form>
         <div id="result" class="result" style="display:none;"></div>
     </div>
@@ -70,14 +70,17 @@
             const symptoms = document.getElementById('symptoms').value.toLowerCase();
             const resultDiv = document.getElementById('result');
 
-            let diagnosis = "No matching pattern found. Please refine your symptoms or consult a professional.";
+            let diagnosis = "未找到匹配的证型。请尝试更详细地描述您的症状，或咨询专业中医师。";
 
-            if (symptoms.includes('fever') && symptoms.includes('chills') && symptoms.includes('no sweat')) {
-                diagnosis = "Suggested Diagnosis: Taiyang Disease - Use Ma Huang Tang.";
-            } else if (symptoms.includes('fever') && symptoms.includes('sweating') && symptoms.includes('mild chills')) {
-                diagnosis = "Suggested Diagnosis: Taiyang Disease - Use Gui Zhi Tang.";
-            } else if (symptoms.includes('abdominal pain') && symptoms.includes('diarrhea')) {
-                diagnosis = "Suggested Diagnosis: Taiyin Disease - Use Li Zhong Wan.";
+            // 诊断逻辑
+            if (symptoms.includes('发热') && symptoms.includes('恶寒') && symptoms.includes('无汗')) {
+                diagnosis = "建议诊断：太阳病表实证 - 使用麻黄汤。";
+            } else if (symptoms.includes('发热') && symptoms.includes('出汗') && symptoms.includes('轻微恶寒')) {
+                diagnosis = "建议诊断：太阳病表虚证 - 使用桂枝汤。";
+            } else if (symptoms.includes('腹痛') && symptoms.includes('腹泻')) {
+                diagnosis = "建议诊断：太阴病 - 使用理中丸。";
+            } else if (symptoms.includes('口苦') && symptoms.includes('胸胁痛') && symptoms.includes('往来寒热')) {
+                diagnosis = "建议诊断：少阳病 - 使用小柴胡汤。";
             }
 
             resultDiv.style.display = 'block';
