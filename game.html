@@ -3,47 +3,89 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>迷宫游戏</title>
+  <title>迷宫英语学习游戏</title>
   <style>
     canvas {
       border: 2px solid #000;
       display: block;
-      margin: 0 auto;
+      margin: 20px auto;
     }
     body {
       font-family: Arial, sans-serif;
       text-align: center;
+    }
+    .question-container {
+      display: none;
       margin: 20px;
+    }
+    .question-container h2 {
+      margin-bottom: 10px;
+    }
+    .question-container button {
+      margin: 5px;
+      padding: 10px 20px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .question-container button:hover {
+      background-color: #45a049;
     }
   </style>
 </head>
 <body>
-  <h1>迷宫游戏</h1>
+  <h1>迷宫英语学习游戏</h1>
   <canvas id="mazeCanvas" width="400" height="400"></canvas>
-  <p>使用键盘方向键或手势滑动控制角色！</p>
+  <div class="question-container" id="questionContainer">
+    <h2 id="questionText"></h2>
+    <div id="answerButtons"></div>
+  </div>
+  <p id="message"></p>
+
   <script>
-    const canvas = document.getElementById('mazeCanvas');
-    const ctx = canvas.getContext('2d');
+    const canvas = document.getElementById("mazeCanvas");
+    const ctx = canvas.getContext("2d");
 
     const maze = [
       [1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 1],
+      [1, 0, 0, 2, 1],
       [1, 0, 1, 0, 1],
-      [1, 0, 1, 0, 1],
-      [1, 1, 1, 0, 1],
-      [1, 0, 0, 0, 1],
+      [1, 3, 1, 0, 1],
       [1, 1, 1, 1, 1],
     ];
+
     const blockSize = 80;
     let playerX = 1;
     let playerY = 1;
+    const questions = {
+      "2": {
+        question: "What is the color of the sky?",
+        options: ["Blue", "Green", "Red", "Yellow"],
+        correct: "Blue",
+      },
+      "3": {
+        question: "How many legs does a cat have?",
+        options: ["2", "3", "4", "5"],
+        correct: "4",
+      },
+    };
 
     function drawMaze() {
       for (let y = 0; y < maze.length; y++) {
         for (let x = 0; x < maze[y].length; x++) {
           if (maze[y][x] === 1) {
-            ctx.fillStyle = 'black';
+            ctx.fillStyle = "black";
             ctx.fillRect(x * blockSize, y * blockSize, blockSize, blockSize);
+          } else if (maze[y][x] === 2 || maze[y][x] === 3) {
+            ctx.fillStyle = "gold";
+            ctx.fillRect(
+              x * blockSize + blockSize / 4,
+              y * blockSize + blockSize / 4,
+              blockSize / 2,
+              blockSize / 2
+            );
           } else {
             ctx.clearRect(x * blockSize, y * blockSize, blockSize, blockSize);
           }
@@ -53,28 +95,65 @@
     }
 
     function drawPlayer() {
-      ctx.fillStyle = 'blue';
+      ctx.fillStyle = "blue";
       ctx.beginPath();
-      ctx.arc(playerX * blockSize + blockSize / 2, playerY * blockSize + blockSize / 2, blockSize / 3, 0, Math.PI * 2);
+      ctx.arc(
+        playerX * blockSize + blockSize / 2,
+        playerY * blockSize + blockSize / 2,
+        blockSize / 3,
+        0,
+        Math.PI * 2
+      );
       ctx.fill();
     }
 
     function movePlayer(dx, dy) {
-      if (maze[playerY + dy][playerX + dx] === 0) {
+      if (maze[playerY + dy][playerX + dx] !== 1) {
         playerX += dx;
         playerY += dy;
-        drawMaze();
-        if (playerX === 3 && playerY === 5) {
-          alert('恭喜通关！');
+        const target = maze[playerY][playerX];
+        if (target === 2 || target === 3) {
+          showQuestion(target);
+          maze[playerY][playerX] = 0; // Remove the question target
         }
+        drawMaze();
       }
     }
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowUp') movePlayer(0, -1);
-      if (e.key === 'ArrowDown') movePlayer(0, 1);
-      if (e.key === 'ArrowLeft') movePlayer(-1, 0);
-      if (e.key === 'ArrowRight') movePlayer(1, 0);
+    function showQuestion(id) {
+      const questionData = questions[id];
+      const questionContainer = document.getElementById("questionContainer");
+      const questionText = document.getElementById("questionText");
+      const answerButtons = document.getElementById("answerButtons");
+
+      questionText.textContent = questionData.question;
+      answerButtons.innerHTML = "";
+      questionData.options.forEach((option) => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.onclick = () => checkAnswer(option, questionData.correct);
+        answerButtons.appendChild(button);
+      });
+
+      questionContainer.style.display = "block";
+    }
+
+    function checkAnswer(selected, correct) {
+      const questionContainer = document.getElementById("questionContainer");
+      const message = document.getElementById("message");
+      if (selected === correct) {
+        message.textContent = "Correct! You can continue.";
+        questionContainer.style.display = "none";
+      } else {
+        message.textContent = "Wrong answer! Try again.";
+      }
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp") movePlayer(0, -1);
+      if (e.key === "ArrowDown") movePlayer(0, 1);
+      if (e.key === "ArrowLeft") movePlayer(-1, 0);
+      if (e.key === "ArrowRight") movePlayer(1, 0);
     });
 
     drawMaze();
