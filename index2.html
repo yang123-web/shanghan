@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>中医诊断系统（感冒） v1.2</title>
+  <title>中医诊断系统（感冒与六经辨证） v2.0</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -70,8 +70,8 @@
 </head>
 <body>
   <div class="container">
-    <h1>中医诊断系统（感冒）</h1>
-    <p class="version">系统版本：v1.2 | 开发时间：2025年1月</p>
+    <h1>中医诊断系统（感冒与六经辨证）</h1>
+    <p class="version">系统版本：v2.0 | 开发时间：2025年1月</p>
     <h2>请选择症状：</h2>
     <div class="symptoms" id="symptoms-container">
       <label><input type="checkbox" value="恶寒"> 恶寒（怕冷）</label>
@@ -79,17 +79,16 @@
       <label><input type="checkbox" value="无汗"> 无汗</label>
       <label><input type="checkbox" value="有汗"> 有汗</label>
       <label><input type="checkbox" value="咳嗽"> 咳嗽</label>
-      <label>
-        痰液颜色：
-        <select id="phlegm-color">
-          <option value="">请选择</option>
-          <option value="白痰">白痰</option>
-          <option value="黄痰">黄痰</option>
-        </select>
-      </label>
+      <label><input type="checkbox" value="白痰"> 白痰</label>
+      <label><input type="checkbox" value="黄痰"> 黄痰</label>
       <label><input type="checkbox" value="口渴"> 口渴</label>
       <label><input type="checkbox" value="便秘"> 便秘</label>
       <label><input type="checkbox" value="腹满"> 腹满</label>
+      <label><input type="checkbox" value="往来寒热"> 往来寒热</label>
+      <label><input type="checkbox" value="胁痛"> 胁痛</label>
+      <label><input type="checkbox" value="小便不利"> 小便不利</label>
+      <label><input type="checkbox" value="心烦"> 心烦</label>
+      <label><input type="checkbox" value="呕吐"> 呕吐</label>
     </div>
     <button class="btn-diagnose" onclick="diagnose()">诊断</button>
     <p class="warning" id="warning"></p>
@@ -98,8 +97,8 @@
 
   <script>
     const symptomsData = {
-      表证: {
-        symptoms: ['恶寒', '发热', '无汗', '有汗'],
+      太阳病: {
+        symptoms: ['恶寒', '发热', '无汗', '有汗', '头痛', '鼻塞', '脉浮紧'],
         prescriptions: {
           麻黄汤: {
             name: '麻黄汤',
@@ -110,7 +109,7 @@
               { name: '甘草', amount: '3克' },
             ],
             usage: '将药材加水煎煮30分钟，分两次服用，温服。',
-            description: '用于太阳表实证，症见发热恶寒，无汗而喘。',
+            description: '用于恶寒、发热、无汗、脉浮紧的太阳表实证。',
           },
           桂枝汤: {
             name: '桂枝汤',
@@ -122,12 +121,12 @@
               { name: '大枣', amount: '3枚' },
             ],
             usage: '将药材加水煎煮30分钟，分两次服用，温服。',
-            description: '用于太阳表虚证，症见发热汗出，恶风。',
+            description: '用于恶寒、发热、有汗、恶风的太阳表虚证。',
           },
         },
       },
-      里证: {
-        symptoms: ['发热', '口渴', '便秘', '腹满'],
+      阳明病: {
+        symptoms: ['发热', '口渴', '便秘', '腹满', '心烦', '脉沉实'],
         prescriptions: {
           大承气汤: {
             name: '大承气汤',
@@ -138,7 +137,26 @@
               { name: '芒硝', amount: '6克' },
             ],
             usage: '将药材加水煎煮40分钟，趁热服用一次。',
-            description: '用于阳明腑实证，症见便秘、腹满。',
+            description: '用于腹满、便秘、脉沉实、发热的阳明腑实证。',
+          },
+        },
+      },
+      少阳病: {
+        symptoms: ['往来寒热', '胸胁苦满', '口苦', '咽干', '目眩', '心烦', '小便不利'],
+        prescriptions: {
+          小柴胡汤: {
+            name: '小柴胡汤',
+            herbs: [
+              { name: '柴胡', amount: '12克' },
+              { name: '黄芩', amount: '9克' },
+              { name: '人参', amount: '9克' },
+              { name: '甘草', amount: '6克' },
+              { name: '半夏', amount: '9克' },
+              { name: '生姜', amount: '9克' },
+              { name: '大枣', amount: '3枚' },
+            ],
+            usage: '将药材加水煎煮30分钟，分两次服用，温服。',
+            description: '用于往来寒热、胸胁苦满、口苦的少阳证。',
           },
         },
       },
@@ -148,14 +166,13 @@
       const selectedSymptoms = Array.from(document.querySelectorAll('.symptoms input:checked')).map(
         (checkbox) => checkbox.value
       );
-      const phlegmColor = document.getElementById('phlegm-color').value;
 
       const warningDiv = document.getElementById('warning');
       const resultDiv = document.getElementById('result');
       warningDiv.textContent = '';
       resultDiv.style.display = 'none';
 
-      if (selectedSymptoms.length === 0 && !phlegmColor) {
+      if (selectedSymptoms.length === 0) {
         warningDiv.textContent = '请至少选择一个症状进行诊断';
         return;
       }
@@ -165,10 +182,7 @@
 
       Object.entries(symptomsData).forEach(([type, data]) => {
         const matches = selectedSymptoms.filter((s) => data.symptoms.includes(s)).length;
-        if (matches >= 2 || (phlegmColor && type === '表证' && phlegmColor === '白痰')) {
-          bestMatch = type;
-          matchedPrescription = Object.values(data.prescriptions)[0];
-        } else if (phlegmColor && type === '里证' && phlegmColor === '黄痰') {
+        if (matches >= 2) {
           bestMatch = type;
           matchedPrescription = Object.values(data.prescriptions)[0];
         }
