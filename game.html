@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>迷宫英语学习游戏</title>
+  <title>迷宫英语学习游戏（扩展版）</title>
   <style>
     canvas {
       border: 2px solid #000;
@@ -36,8 +36,8 @@
   </style>
 </head>
 <body>
-  <h1>迷宫英语学习游戏</h1>
-  <canvas id="mazeCanvas" width="400" height="400"></canvas>
+  <h1>迷宫英语学习游戏（扩展版）</h1>
+  <canvas id="mazeCanvas" width="800" height="800"></canvas>
   <div class="question-container" id="questionContainer">
     <h2 id="questionText"></h2>
     <div id="answerButtons"></div>
@@ -49,26 +49,32 @@
     const ctx = canvas.getContext("2d");
 
     const maze = [
-      [1, 1, 1, 1, 1],
-      [1, 0, 0, 2, 1],
-      [1, 0, 1, 0, 1],
-      [1, 3, 1, 0, 1],
-      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 1, 0, 0, 2, 0, 1],
+      [1, 0, 1, 0, 1, 0, 1, 0, 0, 1],
+      [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+      [1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+      [1, 0, 1, 1, 1, 0, 1, 0, 1, 1],
+      [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+      [1, 1, 1, 0, 1, 1, 1, 1, 3, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     ];
 
     const blockSize = 80;
     let playerX = 1;
     let playerY = 1;
+
     const questions = {
       "2": {
-        question: "What is the color of the sky?",
-        options: ["Blue", "Green", "Red", "Yellow"],
-        correct: "Blue",
+        question: "What is 2 + 2?",
+        options: ["3", "4", "5", "6"],
+        correct: "4",
       },
       "3": {
-        question: "How many legs does a cat have?",
-        options: ["2", "3", "4", "5"],
-        correct: "4",
+        question: "What is the capital of France?",
+        options: ["London", "Berlin", "Paris", "Rome"],
+        correct: "Paris",
       },
     };
 
@@ -117,6 +123,9 @@
           maze[playerY][playerX] = 0; // Remove the question target
         }
         drawMaze();
+        if (playerX === 8 && playerY === 7) {
+          alert("Congratulations! You completed the maze.");
+        }
       }
     }
 
