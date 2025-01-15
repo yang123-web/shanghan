@@ -22,6 +22,12 @@
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
+    .version {
+      text-align: center;
+      font-size: 0.9em;
+      color: gray;
+      margin-bottom: 10px;
+    }
     .symptoms {
       display: flex;
       flex-direction: column;
@@ -65,16 +71,16 @@
 <body>
   <div class="container">
     <h1>中医诊断系统</h1>
-    <p class="version">系统版本：v1.1</p>
-    <h2>请选择您的症状：</h2>
+    <p class="version">系统版本：v1.1 | 开发时间：2025年1月</p>
+    <h2>请选择症状：</h2>
     <div class="symptoms" id="symptoms-container">
-      <label><input type="checkbox" value="恶寒"> 我感到怕冷（恶寒）</label>
-      <label><input type="checkbox" value="发热"> 我感到发热</label>
-      <label><input type="checkbox" value="无汗"> 我无汗</label>
-      <label><input type="checkbox" value="有汗"> 我有汗</label>
-      <label><input type="checkbox" value="口渴"> 我口渴</label>
-      <label><input type="checkbox" value="便秘"> 我便秘</label>
-      <label><input type="checkbox" value="腹满"> 我腹胀</label>
+      <label><input type="checkbox" value="恶寒"> 恶寒（怕冷）</label>
+      <label><input type="checkbox" value="发热"> 发热</label>
+      <label><input type="checkbox" value="无汗"> 无汗</label>
+      <label><input type="checkbox" value="有汗"> 有汗</label>
+      <label><input type="checkbox" value="口渴"> 口渴</label>
+      <label><input type="checkbox" value="便秘"> 便秘</label>
+      <label><input type="checkbox" value="腹满"> 腹满</label>
     </div>
     <button class="btn-diagnose" onclick="diagnose()">诊断</button>
     <p class="warning" id="warning"></p>
