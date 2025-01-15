@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>伤寒论诊断系统</title>
+    <title>患者信息提交</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -44,67 +44,83 @@
         button:hover {
             background: #45a049;
         }
-        .result {
-            margin-top: 20px;
-            padding: 10px;
-            background: #e7f4e4;
-            border-left: 5px solid #4CAF50;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>伤寒论诊断系统</h1>
-        <form id="diagnosisForm">
+        <h1>患者信息提交</h1>
+        <form id="patientForm">
+            <!-- 是否发热 -->
             <div class="form-group">
-                <label for="fever">发热:</label>
+                <label for="fever">是否发热:</label>
                 <select id="fever">
-                    <option value="normal">体温正常</option>
-                    <option value="fever">发热</option>
-                    <option value="high-fever">严重发热</option>
+                    <option value="no">否</option>
+                    <option value="mild">轻度发热</option>
+                    <option value="high">高热</option>
                 </select>
             </div>
+            <!-- 是否恶寒 -->
             <div class="form-group">
-                <label for="chills">恶寒:</label>
+                <label for="chills">是否恶寒:</label>
                 <select id="chills">
-                    <option value="yes">是</option>
                     <option value="no">否</option>
+                    <option value="yes">是</option>
                 </select>
             </div>
+            <!-- 舌苔颜色 -->
             <div class="form-group">
-                <label for="sweating">出汗:</label>
-                <select id="sweating">
-                    <option value="yes">是</option>
-                    <option value="no">否</option>
+                <label for="tongue">舌苔颜色:</label>
+                <select id="tongue">
+                    <option value="normal">正常</option>
+                    <option value="white">白苔</option>
+                    <option value="yellow">黄苔</option>
+                    <option value="thick">厚腻苔</option>
                 </select>
             </div>
-            <button type="button" onclick="diagnose()">诊断</button>
+            <!-- 是否咳嗽 -->
+            <div class="form-group">
+                <label for="cough">是否咳嗽:</label>
+                <select id="cough">
+                    <option value="no">否</option>
+                    <option value="mild">轻微咳嗽</option>
+                    <option value="severe">剧烈咳嗽</option>
+                </select>
+            </div>
+            <!-- 痰液颜色 -->
+            <div class="form-group">
+                <label for="sputum">痰液颜色:</label>
+                <select id="sputum">
+                    <option value="none">无痰</option>
+                    <option value="white">白色</option>
+                    <option value="yellow">黄色</option>
+                    <option value="green">绿色</option>
+                </select>
+            </div>
+            <button type="button" onclick="submitInfo()">提交信息</button>
         </form>
-        <div id="result" class="result" style="display:none;"></div>
+        <div id="result" style="margin-top: 20px; display: none; background: #e7f4e4; padding: 10px; border-left: 5px solid #4CAF50;"></div>
     </div>
 
     <script>
-        function diagnose() {
+        function submitInfo() {
             const fever = document.getElementById('fever').value;
             const chills = document.getElementById('chills').value;
-            const sweating = document.getElementById('sweating').value;
+            const tongue = document.getElementById('tongue').value;
+            const cough = document.getElementById('cough').value;
+            const sputum = document.getElementById('sputum').value;
+
+            let result = `
+                患者信息提交成功：
+                <br>是否发热: ${fever === 'no' ? '否' : fever === 'mild' ? '轻度发热' : '高热'}
+                <br>是否恶寒: ${chills === 'yes' ? '是' : '否'}
+                <br>舌苔颜色: ${tongue === 'normal' ? '正常' : tongue === 'white' ? '白苔' : tongue === 'yellow' ? '黄苔' : '厚腻苔'}
+                <br>是否咳嗽: ${cough === 'no' ? '否' : cough === 'mild' ? '轻微咳嗽' : '剧烈咳嗽'}
+                <br>痰液颜色: ${sputum === 'none' ? '无痰' : sputum === 'white' ? '白色' : sputum === 'yellow' ? '黄色' : '绿色'}
+            `;
+
             const resultDiv = document.getElementById('result');
-
-            let diagnosis = "未找到匹配的证型。请咨询专业中医师。";
-
-            // 诊断逻辑
-            if (fever === 'fever' && chills === 'yes' && sweating === 'no') {
-                diagnosis = "建议诊断：太阳病表实证 - 使用麻黄汤。";
-            } else if (fever === 'fever' && chills === 'yes' && sweating === 'yes') {
-                diagnosis = "建议诊断：太阳病表虚证 - 使用桂枝汤。";
-            } else if (fever === 'normal' && chills === 'no' && sweating === 'no') {
-                diagnosis = "建议诊断：可能为正常状态或轻微不适，无需用药。";
-            } else if (fever === 'high-fever' && chills === 'no' && sweating === 'yes') {
-                diagnosis = "建议诊断：阳明病气分热盛 - 使用白虎汤。";
-            }
-
             resultDiv.style.display = 'block';
-            resultDiv.textContent = diagnosis;
+            resultDiv.innerHTML = result;
         }
     </script>
 </body>
