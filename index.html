@@ -28,7 +28,7 @@
             display: block;
             font-weight: bold;
         }
-        input, select, button {
+        select, button {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
@@ -57,8 +57,26 @@
         <h1>伤寒论诊断系统</h1>
         <form id="diagnosisForm">
             <div class="form-group">
-                <label for="symptoms">请输入症状（例如：发热、恶寒、无汗）:</label>
-                <input type="text" id="symptoms" placeholder="描述您的症状">
+                <label for="fever">发热:</label>
+                <select id="fever">
+                    <option value="normal">体温正常</option>
+                    <option value="fever">发热</option>
+                    <option value="high-fever">严重发热</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="chills">恶寒:</label>
+                <select id="chills">
+                    <option value="yes">是</option>
+                    <option value="no">否</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sweating">出汗:</label>
+                <select id="sweating">
+                    <option value="yes">是</option>
+                    <option value="no">否</option>
+                </select>
             </div>
             <button type="button" onclick="diagnose()">诊断</button>
         </form>
@@ -67,20 +85,22 @@
 
     <script>
         function diagnose() {
-            const symptoms = document.getElementById('symptoms').value.toLowerCase();
+            const fever = document.getElementById('fever').value;
+            const chills = document.getElementById('chills').value;
+            const sweating = document.getElementById('sweating').value;
             const resultDiv = document.getElementById('result');
 
-            let diagnosis = "未找到匹配的证型。请尝试更详细地描述您的症状，或咨询专业中医师。";
+            let diagnosis = "未找到匹配的证型。请咨询专业中医师。";
 
             // 诊断逻辑
-            if (symptoms.includes('发热') && symptoms.includes('恶寒') && symptoms.includes('无汗')) {
+            if (fever === 'fever' && chills === 'yes' && sweating === 'no') {
                 diagnosis = "建议诊断：太阳病表实证 - 使用麻黄汤。";
-            } else if (symptoms.includes('发热') && symptoms.includes('出汗') && symptoms.includes('轻微恶寒')) {
+            } else if (fever === 'fever' && chills === 'yes' && sweating === 'yes') {
                 diagnosis = "建议诊断：太阳病表虚证 - 使用桂枝汤。";
-            } else if (symptoms.includes('腹痛') && symptoms.includes('腹泻')) {
-                diagnosis = "建议诊断：太阴病 - 使用理中丸。";
-            } else if (symptoms.includes('口苦') && symptoms.includes('胸胁痛') && symptoms.includes('往来寒热')) {
-                diagnosis = "建议诊断：少阳病 - 使用小柴胡汤。";
+            } else if (fever === 'normal' && chills === 'no' && sweating === 'no') {
+                diagnosis = "建议诊断：可能为正常状态或轻微不适，无需用药。";
+            } else if (fever === 'high-fever' && chills === 'no' && sweating === 'yes') {
+                diagnosis = "建议诊断：阳明病气分热盛 - 使用白虎汤。";
             }
 
             resultDiv.style.display = 'block';
